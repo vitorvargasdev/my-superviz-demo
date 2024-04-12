@@ -1,30 +1,72 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted, ref } from 'vue'
+import SuperVizRoom from "../../sdk/dist";
+import { VideoConference } from "../../sdk/dist";
+import { CanvasPin, Comments } from "../../sdk/dist";
+
+const DEVELOPER_KEY = import.meta.env.VITE_DEVELOPER_API_KEY;
+
+const room: any = ref(null)
+
+const initializeSuperVizRoom = async () => {
+  room.value = await SuperVizRoom(DEVELOPER_KEY, {
+    roomId: "<ROOM-ID>",
+    group: {
+      id: "<GROUP-ID>",
+      name: "<GROUP-NAME>",
+    },
+    participant: {
+      id: "<USER-ID>",
+      name: "Vitor",
+      avatar: {
+        "imageUrl": "https://<PATH>",
+        "model3DUrl": "https://<PATH>",
+      }
+    },
+    environment: 'local'
+  });
+}
+
+const initComments = async () => {
+  const pinAdapter = new CanvasPin("my-id");
+  const comments = new Comments(pinAdapter);
+  await room.value.addComponent(comments);
+} 
+
+const initVideo = async () => {
+  const video = new VideoConference({
+    camsOff: false,
+    chatOff: false,
+    defaultAvatars: true,
+    defaultToolbar: true,
+    devices: {
+      audioInput: true,
+      audioOutput: true,
+      videoInput: false
+    },
+    enableFollow: false,
+    enableGather: false,
+    enableGoTo: false,
+    language: "en-US",
+    locales: [ ],
+    screenshareOff: false,
+    skipMeetingSettings: false,
+    participantType: "host",
+    transcriptOff: false,
+  });
+  await room.value.addComponent(video);
+}
+
+onMounted(async () => {
+  await initializeSuperVizRoom();
+  await initVideo();
+  await initComments();
+})
+
 </script>
 
 <template>
   <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+   <canvas id="my-id" width="540" height="540"></canvas> 
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
