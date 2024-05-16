@@ -85,15 +85,15 @@ const initRealtime = async () => {
 
   console.log("Channels: ", channels.value)
 
-  channels.value[0].subscribe("my-event", (data: any) => {
+  channels.value[0].subscribe("my-event-0", (data: any) => {
     speakEvent(data, 0);
   });
 
-  channels.value[1].subscribe("my-event", (data: any) => {
+  channels.value[1].subscribe("my-event-1", (data: any) => {
     speakEvent(data, 1);
   });
 
-  channels.value[2].subscribe("my-event", (data: any) => {
+  channels.value[2].subscribe("my-event-2", (data: any) => {
     speakEvent(data, 2);
   });
 }
@@ -103,7 +103,7 @@ const speakEvent = (data: any, channelId: number) => {
 }
 
 const emitEvent = (channelId: number) => {
-  channels.value[channelId].publish("my-event", { message: "Hey! This message is coming from channel: " + channelId + "!" });
+  channels.value[channelId].publish(`my-event-${channelId}`, { message: "Hey! This message is coming from channel: " + channelId + "!" });
 }
 
 onMounted(async () => {
@@ -120,6 +120,6 @@ onMounted(async () => {
     <button @click="emitEvent(0)">Emit Event to channel 1</button>
     <button @click="emitEvent(1)">Emit Event to channel 2</button>
     <button @click="emitEvent(2)">Emit Event to channel 3</button>
-   <canvas id="my-id" width="540" height="540"></canvas> 
+   <!-- <canvas id="my-id" width="540" height="540"></canvas>  -->
   </div>
 </template>
